@@ -2,6 +2,7 @@ package cat.tecnocampus.fgcstations.application.mapper;
 
 import cat.tecnocampus.fgcstations.application.DTOs.*;
 import cat.tecnocampus.fgcstations.domain.*;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,6 +10,7 @@ import java.util.Map;
 
 import static java.util.stream.Collectors.groupingBy;
 
+@Service
 public class MapperHelper {
     public static UserDTO userToUserDTO(User user) {
         var favoriteJourneyDTOList = user.getFavoriteJourneyList().stream().map(fj -> favoriteJourneyToFavoriteJourneyDTO(fj)).toList();

@@ -10,4 +10,6 @@ import java.util.List;
 import java.util.Optional;
 
 public interface JourneyRepository extends JpaRepository<Journey, JourneyId> {
+
+    Optional<Journey> findByOriginAndDestination(String origin, String destination);
 }

@@ -6,6 +6,7 @@ import cat.tecnocampus.fgcstations.application.exception.StationDoesNotExistsExc
 import cat.tecnocampus.fgcstations.application.mapper.MapperHelper;
 import cat.tecnocampus.fgcstations.domain.Station;
 import cat.tecnocampus.fgcstations.persistence.StationRepository;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,31 +14,34 @@ import java.util.List;
 @Service
 public class FgcStationService {
     private final StationRepository stationRepository;
-
-    public FgcStationService(StationRepository stationRepository) {
+    private final ModelMapper modelMapper;
+    public FgcStationService(StationRepository stationRepository, ModelMapper modelMapper) {
         this.stationRepository = stationRepository;
+        this.modelMapper = modelMapper;
     }
 
     public List<StationDTO> getStationsDTO() {
-        //TODO 1: get all stations (see the returned type)
-        return null;
+        return stationRepository.findAll().stream().map(station -> modelMapper.map(station, StationDTO.class)).toList();
     }
 
     public List<Station> getStationsDomain() {
         //TODO 2: get all stations (see you return a domain Station). Actually you don't need to leave this file
         // in order to complete this exercise
-        return null;
+        return stationRepository.findAll();
     }
 
-    public Station getStation(String name) {
+    public Station getStation(String name) throws StationDoesNotExistsException {
         // TODO 3: get a station by name (see the returned type). If the station does not exist, throw a StationDoesNotExistsException
         //  you won't need to write any sql (jpql) query
-        return null;
+        return stationRepository.findByName(name)
+                .orElseThrow(()-> new StationDoesNotExistsException(name));
     }
 
-    public StationDTO getStationDTO(String name) {
+    public StationDTO getStationDTO(String name) throws StationDoesNotExistsException {
         // TODO 4: get a station by name (see the returned type). If the station does not exist, throw a StationDoesNotExistsException
-        return null;
+        Station station = stationRepository.findByName(name)
+                .orElseThrow(()-> new StationDoesNotExistsException(name));
+        return modelMapper.map(station, StationDTO.class);
     }
 
     public List<StationTopFavoriteJourney> getStationsOrderedByFavoriteJourneysAsEitherOriginOrDestination() {
