@@ -9,10 +9,13 @@ import cat.tecnocampus.fgcstations.domain.Friend;
 import cat.tecnocampus.fgcstations.domain.User;
 import cat.tecnocampus.fgcstations.persistence.FriendRepository;
 import cat.tecnocampus.fgcstations.persistence.UserRepository;
+import org.apache.coyote.Response;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,11 +35,10 @@ public class FgcFriendService {
     }
 
     public UserFriendsDTO getUserFriends(String username) {
-        User user = fcgUserService.getDomainUser(username);
-
-        // TODO 20: find all the friends of a user given her username. You can solve this exercise without any sql query
-        //feed the list with the friends of the user
-        List<Friend> friends = new ArrayList<>(friendRepository.findByUser(user));
+        List<Friend> friends = new ArrayList<>(friendRepository.findByIdUsername(username));
+        if (friends.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
         return MapperHelper.listOfAUserFriendsToUserFriendsDTO(friends);
     }
 
@@ -44,11 +46,8 @@ public class FgcFriendService {
         // TODO 21: find all the friends (domain) of all users. You can solve this exercise without leaving this file
         //  note that domain objects are mapped to DTOs
 
-        List<User> users = userRepository.findAll();
-        List<Friend> friends = users.stream()
-                .flatMap(user -> friendRepository.findByUser(user).stream())
-                .toList();
-        return MapperHelper.allUserFriendListToListUserFriendsDTO(friends);
+        return MapperHelper.allUserFriendListToListUserFriendsDTO(friendRepository.findAll()); // replace the empty list with the list of all users
+
 
 
     }
@@ -60,15 +59,16 @@ public class FgcFriendService {
 
     public List<UserTopFriend> getTop3UsersWithMostFriends() {
         // TODO 22: find the top 3 users with the most friends.
-        Pageable top3 = PageRequest.of(0,3);
-        return friendRepository.findTop3UsersWithMostFavoriteJourneys(top3);
+        Pageable limit = PageRequest.of(0, 3);
+        return friendRepository.findTop3UsersWithMostFriends(limit);
     }
 
     // Find all users whose friends have a certain name
     public List<FriendUserDTO> getUsersByFriend(String friendName) {
         // TODO 23: find all users whose friends have a certain name.
-        List<Friend> friends = friendRepository.findFriendsByFriendName(friendName);
-        return friends.stream().map(friend -> modelMapper.map(friend, FriendUserDTO.class)).toList();
+
+        return friendRepository.findUsersByFriendName(friendName);
+
     }
 
 }

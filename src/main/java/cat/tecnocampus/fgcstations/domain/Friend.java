@@ -48,4 +48,8 @@ public class Friend {
     public int hashCode() {
         return id.hashCode();
     }
+
+    public FriendId getId() {
+        return id;
+    }
 }

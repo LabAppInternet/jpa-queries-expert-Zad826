@@ -41,8 +41,7 @@ public class FgcJouneyService {
     public JourneyId getJourneyId(String origin, String destination) throws JourneyDoesNotExistsException {
         // TODO 9: get a journey ID by origin and destination (domain JourneyId). If the journey does not exist, throw a JourneyDoesNotExistsException
         //  try no to use any sql (jpql) query, just come up with an appropriate method name
-        Journey journey = journeyRepository.findByOriginAndDestination(origin, destination)
-                .orElseThrow(() -> new JourneyDoesNotExistsException(origin, destination));
-        return journey.getId();
+        return journeyRepository.findByOriginAndDestination(origin, destination)
+                .orElseThrow(() -> new JourneyDoesNotExistsException(origin, destination)).getId();
     }
 }
